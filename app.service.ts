@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import fetch from 'node-fetch';
+import fetch from "node-fetch"
 import { verifyKey } from 'discord-interactions';
 import express from "express"
 
