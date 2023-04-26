@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "mmmmmmm",
   "main": "app.js",
-  "type": "module",
   "engines": {
     "node": "16.x"
   },
