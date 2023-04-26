@@ -1,25 +1,44 @@
 import 'dotenv/config';
 import fetch from 'node-fetch';
 import { verifyKey } from 'discord-interactions';
+import express from "express"
 
-export function VerifyDiscordRequest(clientKey) {
-  return function (req, res, buf, encoding) {
+export function VerifyDiscordRequest(clientKey: string) {
+  return function (req: express.Request, res: express.Response, buf: Buffer, encoding: string) {
     const signature = req.get('X-Signature-Ed25519');
     const timestamp = req.get('X-Signature-Timestamp');
 
-    const isValidRequest = verifyKey(buf, signature, timestamp, clientKey);
-    if (!isValidRequest) {
-      res.status(401).send('Bad request signature');
-      throw new Error('Bad request signature');
+    try {
+        if (!signature || !timestamp) {
+            throw new Error('Bad request signature')
+        }
+
+        const isValidRequest = verifyKey(buf, signature, timestamp, clientKey);
+
+        if (!isValidRequest) {
+        throw new Error('Bad request signature');
+        }
     }
+    catch(err) {
+        if (err instanceof Error) {
+            res.status(401).send('Bad request signature');
+            throw err
+        }
+        res.status(500)
+        throw err
+    }
+
   };
 }
 
-export async function DiscordRequest(endpoint, options) {
+interface options {
+    method: string
+    body: string
+}
+export async function DiscordRequest(endpoint: string, options: options) {
   // append endpoint to root API URL
   const url = 'https://discord.com/api/v10/' + endpoint;
-  // Stringify payloads
-  if (options.body) options.body = JSON.stringify(options.body);
+
   // Use node-fetch to make requests
   const res = await fetch(url, {
     headers: {
@@ -39,7 +58,7 @@ export async function DiscordRequest(endpoint, options) {
   return res;
 }
 
-export async function InstallGlobalCommands(appId, commands) {
+export async function InstallGlobalCommands(appId: string, commands: string) {
   // API endpoint to overwrite global commands
   const endpoint = `applications/${appId}/commands`;
 
@@ -57,6 +76,6 @@ export function getRandomEmoji() {
   return emojiList[Math.floor(Math.random() * emojiList.length)];
 }
 
-export function capitalize(str) {
+export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
