@@ -70,12 +70,21 @@ export async function InstallGlobalCommands(appId: string, commands: string) {
   }
 }
 
+export function parseDate(date: Date): void {
+  date.setMilliseconds(0)
+  date.setSeconds(0)
+  date.setMinutes(0)
+  date.setHours(0)
+}
+
 // Simple method that returns a random emoji from list
 export function getRandomEmoji() {
   const emojiList = ['😭','😄','😌','🤓','😎','😤','🤖','😶‍🌫️','🌏','📸','💿','👋','🌊','✨'];
   return emojiList[Math.floor(Math.random() * emojiList.length)];
 }
 
+/*
 export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+*/

@@ -11,7 +11,13 @@ const TEST_COMMAND = {
   type: 1,
 };
 
+const ALMOCO_COMMAND = {
+  name: 'almoço',
+  description: 'tá com fome?',
+  type: 1,
+}
 
-const ALL_COMMANDS = [TEST_COMMAND];
+
+const ALL_COMMANDS = [TEST_COMMAND, ALMOCO_COMMAND];
 
 InstallGlobalCommands(appId, JSON.stringify(ALL_COMMANDS));

@@ -1,11 +1,13 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import { VerifyDiscordRequest, getRandomEmoji } from "./app.service";
+import { VerifyDiscordRequest, getRandomEmoji, parseDate } from "./app.service";
 import { InteractionType, InteractionResponseType } from "discord-interactions";
+import { PrismaClient } from "@prisma/client";
 
 dotenv.config();
 
-const app: Express = express();
+const app = express();
+const prisma = new PrismaClient();
 const port = process.env.PORT;
 const publicKey = process.env.PUBLIC_KEY
 
@@ -30,23 +32,41 @@ app.post('/interactions', async function (req: express.Request, res: express.Res
     return res.send({ type: InteractionResponseType.PONG });
   }
 
-  /**
-   * Handle slash command requests
-   * See https://discord.com/developers/docs/interactions/application-commands#slash-commands
-   */
+
   if (type === InteractionType.APPLICATION_COMMAND) {
     const { name } = data;
     
-    // "test" command
     if (name === 'test') {
-      // Send a message into the channel where command was triggered from
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          // Fetches a random emoji to send from a helper function
           content: 'hello world ' + getRandomEmoji(),
         },
       });
+    }
+
+    if (name == 'almoço') {
+
+      //let almoco = "bla bla bla"
+      const date = new Date()
+      parseDate(date)
+
+      const almoco = prisma.almoco.findFirst({
+        where: {
+          data: date
+        }, 
+        include: {
+          alimentos: true
+        }
+      })
+      console.log(almoco)
+
+      return res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: almoco
+        }
+      })
     }
   }
 });
